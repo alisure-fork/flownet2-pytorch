@@ -11,13 +11,25 @@
 ImportError: /.local/lib/python3.6/site-packages/channelnorm_cuda-0.0.0-py3.6-linux-x86_64.egg/channelnorm_cuda.cpython-36m-x86_64-linux-gnu.so: undefined symbol: THPVariableClass
 ```
 
+```
+保证`import torch`在导入的模块前边
+```
+
 [https://blog.csdn.net/xiaomudouer/article/details/84330083](https://blog.csdn.net/xiaomudouer/article/details/84330083)
 
 
-## 3. 查看光流
+## 3. 查看光流(需编译)
 
 > `read`
 
 使用师妹提供的C代码。
 
 [https://blog.csdn.net/qq_20514449/article/details/78907403](https://blog.csdn.net/qq_20514449/article/details/78907403)
+
+
+## 4. Inference
+
+> `inference*.py`
+
+从`main.py`中抽离。
+
