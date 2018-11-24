@@ -68,7 +68,9 @@ We've included caffe pre-trained models. Should you use these pre-trained weight
     # Example on MPISintel Clean   
     python main.py --inference --model FlowNet2 --save_flow --inference_dataset MpiSintelClean \
     --inference_dataset_root /path/to/mpi-sintel/clean/dataset \
-    --resume /path/to/checkpoints 
+    --resume /path/to/checkpoints
+
+    python main.py --inference --model FlowNet2C --save_flow --inference_dataset MpiSintelClean \
     
 ## Training and validation
 

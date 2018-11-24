@@ -25,15 +25,12 @@ if __name__ == '__main__':
     parser.add_argument('--start_epoch', type=int, default=1)
     parser.add_argument('--total_epochs', type=int, default=10000)
     parser.add_argument('--batch_size', '-b', type=int, default=8, help="Batch size")
-    parser.add_argument('--train_n_batches', type=int, default=-1,
-                        help='Number of min-batches per epoch. If < 0, it will be determined by training_dataloader')
-    parser.add_argument('--crop_size', type=int, nargs='+', default=[256, 256],
-                        help="Spatial dimension to crop training samples for training")
+    parser.add_argument('--train_n_batches', type=int, default = -1, help='Number of min-batches per epoch. If < 0, it will be determined by training_dataloader')
+    parser.add_argument('--crop_size', type=int, nargs='+', default = [256, 256], help="Spatial dimension to crop training samples for training")
     parser.add_argument('--gradient_clip', type=float, default=None)
-    parser.add_argument('--schedule_lr_frequency', type=int, default=0,
-                        help='in number of iterations (0 for no schedule)')
+    parser.add_argument('--schedule_lr_frequency', type=int, default=0, help='in number of iterations (0 for no schedule)')
     parser.add_argument('--schedule_lr_fraction', type=float, default=10)
-    parser.add_argument("--rgb_max", type=float, default=255.)
+    parser.add_argument("--rgb_max", type=float, default = 255.)
 
     parser.add_argument('--number_workers', '-nw', '--num_workers', type=int, default=8)
     parser.add_argument('--number_gpus', '-ng', type=int, default=-1, help='number of GPUs to use')
@@ -45,30 +42,22 @@ if __name__ == '__main__':
 
     parser.add_argument('--validation_frequency', type=int, default=5, help='validate every n epochs')
     parser.add_argument('--validation_n_batches', type=int, default=-1)
-    parser.add_argument('--render_validation', action='store_true',
-                        help='run inference (save flows to file) and every validation_frequency epoch')
+    parser.add_argument('--render_validation', action='store_true', help='run inference (save flows to file) and every validation_frequency epoch')
 
-    parser.add_argument('--inference', default=True, action='store_true')
-    parser.add_argument('--inference_size', type=int, nargs='+', default=[-1, -1],
-                        help='spatial size divisible by 64. default (-1,-1) - largest possible valid size would be used')
+    parser.add_argument('--inference', action='store_true')
+    parser.add_argument('--inference_size', type=int, nargs='+', default = [-1,-1], help='spatial size divisible by 64. default (-1,-1) - largest possible valid size would be used')
     parser.add_argument('--inference_batch_size', type=int, default=1)
     parser.add_argument('--inference_n_batches', type=int, default=-1)
-    parser.add_argument('--save_flow', default=True, action='store_true', help='save predicted flows to file')
-    # parser.add_argument('--inference_dataset_root22', default="/home/ubuntu/PycharmProjects/ALISURE/opticalflow/data/MPI-Sintel/test",
-    #                     help='run inference (save flows to file) and every validation_frequency epoch')
+    parser.add_argument('--save_flow', action='store_true', help='save predicted flows to file')
 
-    parser.add_argument('--resume',
-                        default='/home/ubuntu/PycharmProjects/ALISURE/opticalflow/flownet2-pytorch/FlowNet2-C_checkpoint.pth.tar',
-                        type=str, metavar='PATH',
-                        help='path to latest checkpoint (default: none)')
+    parser.add_argument('--resume', default='', type=str, metavar='PATH', help='path to latest checkpoint (default: none)')
     parser.add_argument('--log_frequency', '--summ_iter', type=int, default=1, help="Log every n batches")
 
     parser.add_argument('--skip_training', action='store_true')
     parser.add_argument('--skip_validation', action='store_true')
 
     parser.add_argument('--fp16', action='store_true', help='Run model in pseudo-fp16 mode (fp16 storage fp32 math).')
-    parser.add_argument('--fp16_scale', type=float, default=1024.,
-                        help='Loss scaling, positive power of 2 values can improve fp16 convergence.')
+    parser.add_argument('--fp16_scale', type=float, default=1024., help='Loss scaling, positive power of 2 values can improve fp16 convergence.')
 
     tools.add_arguments_for_module(parser, models, argument_for_class='model', default='FlowNet2C')
 
@@ -202,7 +191,7 @@ if __name__ == '__main__':
         block.log('Number of parameters: {}'.format(
             sum([p.data.nelement() if p.requires_grad else 0 for p in model_and_loss.parameters()])))
 
-        # assing to cuda or wrap with dataparallel, model and loss
+        # assing to cuda or wrap with dataparallel, model and loss 
         if args.cuda and (args.number_gpus > 0) and args.fp16:
             block.log('Parallelizing')
             model_and_loss = nn.parallel.DataParallel(model_and_loss, device_ids=list(range(args.number_gpus)))
@@ -247,7 +236,7 @@ if __name__ == '__main__':
         train_logger = SummaryWriter(log_dir=os.path.join(args.save, 'train'), comment='training')
         validation_logger = SummaryWriter(log_dir=os.path.join(args.save, 'validation'), comment='validation')
 
-    # Dynamically load the optimizer with parameters passed in via "--optimizer_[param]=[value]" arguments
+    # Dynamically load the optimizer with parameters passed in via "--optimizer_[param]=[value]" arguments 
     with tools.TimerBlock("Initializing {} Optimizer".format(args.optimizer)) as block:
         kwargs = tools.kwargs_from_args(args, 'optimizer')
         if args.fp16:
@@ -388,8 +377,8 @@ if __name__ == '__main__':
                 data, target = [d.cuda(async=True) for d in data], [t.cuda(async=True) for t in target]
             data, target = [Variable(d) for d in data], [Variable(t) for t in target]
 
-            # when ground-truth flows are not available for inference_dataset,
-            # the targets are set to all zeros. thus, losses are actually L1 or L2 norms of compute optical flows,
+            # when ground-truth flows are not available for inference_dataset, 
+            # the targets are set to all zeros. thus, losses are actually L1 or L2 norms of compute optical flows, 
             # depending on the type of loss norm passed in
             with torch.no_grad():
                 losses, output = model(data[0], target[0], inference=True)
@@ -480,5 +469,4 @@ if __name__ == '__main__':
 
         train_logger.add_scalar('seconds per epoch', progress._time() - last_epoch_time, epoch)
         last_epoch_time = progress._time()
-
     print("\n")
